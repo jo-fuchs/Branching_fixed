@@ -19,7 +19,7 @@
 library(ggplot2)
 library(ggsci)
 library(tidyr)
-source(SummarizeNeurons.R)
+source("SummarizeNeurons.R")
 
 
 ####  2. Analysis  ################################################################################################
@@ -80,7 +80,7 @@ axon_plot <- ggplot(Total, aes(x = " ", y = total_axon)) +
   # Axes and Title
   ggtitle("Total Axon length") +
   xlab("") +
-  ylab("Total axon length [µm]\n") +
+  ylab("Total axon length [Âµm]\n") +
   plot_theme +
   scale_color_startrek() +
   scale_fill_startrek()
@@ -109,7 +109,7 @@ axon_plot <- ggplot(Total, aes(x = " ", y = primary_axon)) +
   # Axes and Title
   ggtitle("Primary Axon length") +
   xlab("") +
-  ylab("Primary axon length [µm]\n") +
+  ylab("Primary axon length [Âµm]\n") +
   plot_theme +
   scale_color_startrek() +
   scale_fill_startrek()
@@ -254,7 +254,7 @@ dend_plot <- ggplot(Total, aes(x = " ", y = total_neurite_length)) +
   # Axes and Title
   ggtitle("Total neurite length") +
   xlab("") +
-  ylab("Total neurite length [µm]\n") +
+  ylab("Total neurite length [Âµm]\n") +
   plot_theme +
   scale_color_startrek() +
   scale_fill_startrek()
