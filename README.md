@@ -8,4 +8,4 @@ Goals:
    - secondary statistic for each neuron (Branches / length, Mean lengths, Total lengths, Axon/Dendrite Ratio)
    - Create summary Figures
  
-requires data created through: ImageJ plugin NeuronJ - tracing measurements exported as .txt
+requires data created through: ImageJ plugin NeuronJ - tracing measurements exported as .txt or .csv

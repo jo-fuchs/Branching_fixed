@@ -7,7 +7,14 @@ SummarizeNeurons <- function(folderdir) {
   
   # read filelist
   folderlist <- list.files(path = folderdir, include.dirs = F, recursive = F, pattern = ".txt$") # pattern only includes txt-files
-  
+  csv_marker = FALSE
+  if (length(folderlist) == 0) { # NeuronJ or Fiji-Update 2020 saves results as .csv
+    folderlist <- list.files(path = folderdir, include.dirs = F, recursive = F, pattern = ".csv$")
+    csv_marker = TRUE
+    if(length(folderlist) == 0) {
+      stop("This folder doesn't seem to contain any NeuronJ measurements files")
+      }
+  }
   
   # define variable names in Results dataframes
   Axon_results <- data.frame(
@@ -27,9 +34,31 @@ SummarizeNeurons <- function(folderdir) {
   
   # open results per cell
   for (i in 1:length(folderlist)) {
+   temp = NULL
+    # if loading doesn't work, skip it
+    fail <- tryCatch(error = function(cnd) {
+        warning(paste(folderlist[i], "could not be read:", cnd$message))
+        cnd
+      },
+      
+      # load as csv or txt depending on which files are detected in folder
+      if(csv_marker) {
+        temp <- read.table(paste(folderdir, "/", folderlist[i], sep = ""), header = TRUE, sep = ",")
+      } else {
+        temp <- read.table(paste(folderdir, "/", folderlist[i], sep = ""), header = TRUE, sep = "\t")
+      }
+      )
+      
+    if(inherits(fail, "error")) next
     
-    ## open tracing measurements for individual neuron as temp
-    temp <- read.table(paste(folderdir, "/", folderlist[i], sep = ""), header = TRUE, sep = "\t")
+    # Test for correct format of csv-files > else skip this file
+    else if(is.null(temp$Type)) {  
+    Axon_results[i, 1] <- folderlist[i]   
+    Dendrite_results[i, 1] <- folderlist[i]      
+    Leftover[i, 1] <- folderlist[i]
+    warning(paste(folderlist[i], "seems to have a different structure than NeuronJ Tracing measurements.\n"))
+    next
+    }
     
     ## empty vectors for lengths in each Category
     Axon <- vector()
@@ -44,25 +73,37 @@ SummarizeNeurons <- function(folderdir) {
     
     ## store lengths for each category in individual vector, store uncategorized in remaining
     for (k in 1:nrow(temp)) {
-      if (temp$Type[k] == "Axon") {
+      # alternative option: switch-statement
+      # switch(tolower(temp$Type[k]), 
+      #        axon             = Axon[k] <- temp[k, 6],
+      #        primary          = Primary[k] <- temp[k, 6],
+      #        secondary        = Secondary[k] <- temp[k, 6],
+      #        tertiary         = Tertiary[k] <- temp[k, 6],
+      #        quartiary        = Quartiary[k] <- temp[k, 6],
+      #        dendrite         = Dendrite[k] <- temp[k, 6],
+      #        dendrite_primary = Dendrite_primary[k] <- temp[k, 6],
+      #        ##leftovers
+      #        Other[k] <- temp[k, 6]
+      # )
+      if (tolower(temp$Type[k]) == "axon") {
         Axon[k] <- temp[k, 6]
       }
-      else if (temp$Type[k] == "Primary") {
+      else if (tolower(temp$Type[k]) == "primary") {
         Primary[k] <- temp[k, 6]
       }
-      else if (temp$Type[k] == "Secondary") {
+      else if (tolower(temp$Type[k]) == "secondary") {
         Secondary[k] <- temp[k, 6]
       }
-      else if (temp$Type[k] == "Tertiary") {
+      else if (tolower(temp$Type[k]) == "tertiary") {
         Tertiary[k] <- temp[k, 6]
       }
-      else if (temp$Type[k] == "Quartiary") {
+      else if (tolower(temp$Type[k]) == "quartiary") {
         Quartiary[k] <- temp[k, 6]
       }
-      else if (temp$Type[k] == "Dendrite") {
+      else if (tolower(temp$Type[k]) == "dendrite") {
         Dendrite[k] <- temp[k, 6]
       }
-      else if (temp$Type[k] == "Dendrite_primary") {
+      else if (tolower(temp$Type[k]) == "dendrite_primary") {
         Dendrite_primary[k] <- temp[k, 6]
       }
       else {
@@ -101,10 +142,16 @@ SummarizeNeurons <- function(folderdir) {
     
     Leftover[i, 1] <- folderlist[i]                                            # Image-Name
     Leftover[i, 2] <- length(na.omit(Other))                                   # Number of non-/ mis-classified processes
+    
+    if(Leftover[i, 2] > 0) {
+      warning(paste(folderlist[i], ": some tracings have an unfamiliar type. Consider revising the NeuronJ tracings before you continue. \nSupported types are: Axon, Primary, Secondary, Tertiary, Quartiary, Dendrite & Dendrite_primary\n"))
+    }
+    
   }
   
+
   
-  # seperate file name into Group & Image ID
+  # separate file name into Group & Image ID
   Axon_results <- separate(data = Axon_results, col = Image, into = c("Condition", "ID"), sep = "_", remove = F, extra = "merge")
   Dendrite_results <- separate(data = Dendrite_results, col = Image, into = c("Condition", "ID"), sep = "_", remove = F, extra = "merge")
   
@@ -113,4 +160,5 @@ SummarizeNeurons <- function(folderdir) {
   write.table(Axon_results, file.path(resultsdir, "Axon_results.txt"), sep = "\t", row.names = F)
   write.table(Dendrite_results, file.path(resultsdir, "Dendrite_results.txt"), sep = "\t", row.names = F)
   write.table(Leftover, file.path(resultsdir, "Misclassified.txt"), sep = "\t", row.names = F)
-}
+  message("Success: All neurons have been analysed and Results have been saved\n")
+  }
