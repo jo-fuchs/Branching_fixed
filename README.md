@@ -1,6 +1,7 @@
 # Branching_fixed
 Branching Analysis of fixed neurons measured via NeuronJ
 
+used in Brosig et. al, 2019, Cell reports, https://doi.org/10.1016/j.celrep.2019.10.039
 
 Goals:
 
