@@ -8,7 +8,7 @@
 ###
 ###   requires data created through: ImageJ plugin NeuronJ - tracing measurements exported as .txt
 ###
-###   Version 1.1 (08.08.2020)
+###   Version 1.2 (04.02.2021)
 ###   Joachim Fuchs & Vanessa Schulmann
 ###
 ##################################################################################################################
