@@ -91,7 +91,7 @@ SummarizeNeurons <- function(folderdir) {
     Leftover[j, 1] <- ID                                                        # Image-Name
     Leftover[j, 2] <- length(na.omit(Other))                                    # Number of non-/ mis-classified processes
     
-    if(Leftover[i, 2] > 0) {
+    if(Leftover[j, 2] > 0) {
       warning(paste(ID, ": some tracings have an unfamiliar type. Consider revising the NeuronJ tracings before you continue. \nSupported types are: Axon, Primary, Secondary, Tertiary, Quartiary, Neurite & Neurite_primary\n"))
     }
     
