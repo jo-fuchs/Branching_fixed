@@ -1,5 +1,5 @@
 ## Summary Function
-SummarizeNeurons <- function(folderdir) {
+SummarizeNeurons <- function(folderdir, min_length) {
   
   # the magic function: count & measure length of individual processes
   SummarizeIndividual <- function(temp, ID, input) {
@@ -28,6 +28,8 @@ SummarizeNeurons <- function(folderdir) {
       #        ##leftovers
       #        Other[k] <- temp[k, 6]
       # )
+      if (temp[k, 6] > min_length) {
+      
       if (tolower(temp$Type[k]) == "axon") {
         Axon[k] <- temp[k, 6]
       }
@@ -53,7 +55,7 @@ SummarizeNeurons <- function(folderdir) {
         Other[k] <- temp[k, 6]
       }
     }
-    
+    }
     
     # Enter stats to table (somehow using column names instead of indices runs into error after second loop )
     Axon_results <- input[[1]]

@@ -29,7 +29,10 @@ source("SummarizeNeurons.R")
 folderdir <- dirname(file.choose(new = FALSE))
 
 ## Run functions
-SummarizeNeurons(folderdir)
+
+# minimal branch length
+min_length = 10 
+SummarizeNeurons(folderdir, min_length)
 
 
 
